@@ -5,7 +5,7 @@ const fs = require("fs");
 // could be done via readline, but requires more code to be transformed into an array =)
 const file = TEST ? "3-input-test.txt" : "3-input.txt";
 const inputStr = fs.readFileSync(file, "utf-8");
-const lines = inputStr.replace("\r", "").split("\n");
+const lines = inputStr.replace(/\r/g, "").split("\n");
 
 const lineLength = lines[0].length;
 
