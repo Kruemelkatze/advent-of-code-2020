@@ -24,7 +24,6 @@ for (let i = 0; i < inputStr.length; i++) {
         }
     } else if (inputStr.charAt(i + 1) == '\n') {
         // next grp
-        console.log(totalSum);
         set.clear();
     }
 
