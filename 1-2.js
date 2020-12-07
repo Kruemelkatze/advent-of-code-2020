@@ -7,11 +7,11 @@ const t0 = performance.now();
 input = input.sort((a, b) => a - b);
 
 var solution;
-const min = input.reduce((prev, current) => Math.min(prev, current), Number.MAX_SAFE_INTEGER);
-
+const min = input[0];
+const m2 = min * 2;
 out_of_here: for (let i = 0; i < input.length; i++) {
     let one = input[i];
-    if (one + min >= target)
+    if (one + m2 >= target)
         continue;
 
 
