@@ -45,18 +45,24 @@ for (let line of lines) {
 // LOOKUP
 const target = "shiny gold";
 
-var count = countContainedBags(containsDict[target], 1);
+var cache = {};
+var count = countContainedBags(target);
 
-function countContainedBags(entry) {
+function countContainedBags(entryId) {
     var cnt = 1;
+    var entry = containsDict[entryId];
 
     if (!entry)
         return cnt;
 
     for (let bagId in entry) {
         let entryCnt = entry[bagId];
-        cnt += entryCnt * countContainedBags(containsDict[bagId]);
+
+        let containedBags = cache[bagId] || countContainedBags(bagId);
+        cnt += entryCnt * containedBags;
     }
+
+    cache[entryId] = cnt;
     return cnt;
 }
 
