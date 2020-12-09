@@ -11,47 +11,30 @@ const t0 = performance.now();
 const preamble = TEST ? 5 : 25;
 const numbers = inputStr.split("\n").map(s => +s);
 
-var sumBucket = new Set();
-var sumDict = {};
-var buckets = [];
-for (let p = 0; p < preamble - 1; p++) {
-    let pset = new Set();
-    buckets[p] = pset;
+var current = new Set(numbers.slice(0, preamble));
 
-    for (let pb = p + 1; pb < preamble; pb++) {
-        let sum = numbers[p] + numbers[pb];
-        pset.add(sum);
-        sumDict[sum] = (sumDict[sum] || 0) + 1;
-    }
-}
-
-var bucketIterator = 0;
-var firstInvalid = null;
-// fill bucket from preamble
+var firstInvalid;
 for (let i = preamble; i < numbers.length; i++) {
     let n = numbers[i];
-    let valid = sumDict[n];
+    let foundPairForNumber = false;
 
-    if (!valid) {
+    for (let c of current) {
+        if (c == 2 * n)
+            continue;
+
+        let diff = n - c;
+        if (current.has(diff)) {
+            foundPairForNumber = true;
+            break;
+        }
+    }
+
+    if (!foundPairForNumber) {
         firstInvalid = { i, n };
         break;
     }
-
-    let changeSet = buckets[bucketIterator];
-    bucketIterator = (bucketIterator + 1) % buckets.length;
-
-    for (let e of changeSet) {
-        if (sumDict[e] === 1) {
-            delete sumDict[e];
-        }
-    }
-    changeSet.clear();
-
-    for (let j = i - preamble - 1; j < i; j++) {
-        let sum = n + numbers[j];
-        changeSet.add(sum);
-        sumDict[sum] = (sumDict[sum] || 0) + 1;
-    }
+    current.delete(numbers[i - preamble]);
+    current.add(n);
 }
 
 // PART 2
