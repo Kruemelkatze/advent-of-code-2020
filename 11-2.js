@@ -36,6 +36,7 @@ var iterations = 0;
 
 while (iterations < maxIterations && anySeatChangedThisTurn) {
     let { totalSeated, anySeatChanged } = simulate();
+
     totalSeatedThisTurn = totalSeated;
     anySeatChangedThisTurn = anySeatChanged;
     iterations++;
@@ -54,7 +55,7 @@ function simulate() {
             anySeatChanged = anySeatChanged || newVal != oldVal;
             totalSeated += newVal;
         } else if (oldVal == 1) {
-            newVal = countNeighbours(i) < 4 ? 1 : 0;
+            newVal = countNeighbours(i) < 5 ? 1 : 0;
             anySeatChanged = anySeatChanged || newVal != oldVal;
             totalSeated += newVal;
         }
@@ -70,48 +71,40 @@ function simulate() {
 }
 
 function countNeighbours(index) {
-    // I'm pretty sure there is a way to make this nicer
-
-    let row = Math.floor(index / lineLength);
-    let col = index % lineLength;
-
     let n = 0;
-
-    if (row > 0) {
-        n += currentSeats[index - lineLength] || 0;
-
-        if (col > 0) {
-            n += currentSeats[index - lineLength - 1] || 0;
-
-        }
-
-        if (col < lineLength - 1) {
-            n += currentSeats[index - lineLength + 1] || 0;
-        }
-    }
-
-    if (row < numberLines - 1) {
-        n += currentSeats[index + lineLength] || 0;
-
-        if (col > 0) {
-            n += currentSeats[index + lineLength - 1] || 0;
-
-        }
-
-        if (col < lineLength - 1) {
-            n += currentSeats[index + lineLength + 1] || 0;
-        }
-    }
-
-    if (col > 0) {
-        n += currentSeats[index - 1] || 0;
-    }
-
-    if (col < lineLength - 1) {
-        n += currentSeats[index + 1] || 0;
-    }
+    n += checkDirection(index, 0, 1);
+    n += checkDirection(index, 0, -1);
+    n += checkDirection(index, 1, 0);
+    n += checkDirection(index, -1, 0);
+    n += checkDirection(index, -1, -1);
+    n += checkDirection(index, 1, 1);
+    n += checkDirection(index, -1, 1);
+    n += checkDirection(index, 1, -1);
 
     return n;
+}
+
+function checkDirection(index, rowDir, colDir) {
+    let { row, col } = map1to2(index);
+
+    do {
+        row += rowDir;
+        col += colDir;
+    } while (row >= 0 && row < numberLines && col >= 0 && col < lineLength && !(currentSeats[map2to1(row, col)] > -1))
+
+    let occupied = row >= 0 && row < numberLines && col >= 0 && col < lineLength && currentSeats[map2to1(row, col)] == 1;
+    return occupied ? 1 : 0;
+}
+
+function map1to2(index) {
+    return {
+        row: Math.floor(index / lineLength),
+        col: index % lineLength,
+    };
+}
+
+function map2to1(row, col) {
+    return row * lineLength + col;
 }
 
 function printArray(array, lineLength) {
